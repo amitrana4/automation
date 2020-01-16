@@ -1,0 +1,309 @@
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<body>
+
+
+    <!-- <div id="editor">
+        <p>This is the editor content.</p>
+    </div>
+    <script src="./node_modules/ckeditor/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('editor');
+    </script> -->
+
+
+    <!--The content below is only a placeholder and can be replaced.-->
+    <div style="text-align:center">
+
+        <style>
+            /* You can add global styles to this file, and also import other style files */
+            /*Now the CSS*/
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            .tree ul {
+                padding-top: 20px;
+                position: relative;
+                transition: all 0.5s;
+                -webkit-transition: all 0.5s;
+                -moz-transition: all 0.5s;
+                display: flex;
+            }
+
+            .tree li {
+                float: left;
+                text-align: center;
+                list-style-type: none;
+                position: relative;
+                padding: 20px 5px 0 5px;
+
+                transition: all 0.5s;
+                -webkit-transition: all 0.5s;
+                -moz-transition: all 0.5s;
+            }
+
+            /*We will use ::before and ::after to draw the connectors*/
+
+            .tree li::before,
+            .tree li::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 50%;
+                border-top: 1px solid #ccc;
+                width: 50%;
+                height: 20px;
+            }
+
+            .tree li::after {
+                right: auto;
+                left: 50%;
+                border-left: 1px solid #ccc;
+            }
+
+            /*We need to remove left-right connectors from elements without 
+any siblings*/
+            .tree li:only-child::after,
+            .tree li:only-child::before {
+                display: none;
+            }
+
+            /*Remove space from the top of single children*/
+            .tree li:only-child {
+                padding-top: 0;
+            }
+
+            /*Remove left connector from first child and 
+right connector from last child*/
+            .tree li:first-child::before,
+            .tree li:last-child::after {
+                border: 0 none;
+            }
+
+            /*Adding back the vertical connector to the last nodes*/
+            .tree li:last-child::before {
+                border-right: 1px solid #ccc;
+                border-radius: 0 5px 0 0;
+                -webkit-border-radius: 0 5px 0 0;
+                -moz-border-radius: 0 5px 0 0;
+            }
+
+            .tree li:first-child::after {
+                border-radius: 5px 0 0 0;
+                -webkit-border-radius: 5px 0 0 0;
+                -moz-border-radius: 5px 0 0 0;
+            }
+
+            /*Time to add downward connectors from parents*/
+            .tree ul ul::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                border-left: 1px solid #ccc;
+                width: 0;
+                height: 20px;
+            }
+
+            .tree li a {
+                border: 1px solid #ccc;
+                padding: 5px 10px;
+                text-decoration: none;
+                color: #666;
+                font-family: arial, verdana, tahoma;
+                font-size: 11px;
+                display: inline-block;
+                width: 270px;
+                min-height: 100px;
+
+                border-radius: 5px;
+                -webkit-border-radius: 5px;
+                -moz-border-radius: 5px;
+
+                transition: all 0.5s;
+                -webkit-transition: all 0.5s;
+                -moz-transition: all 0.5s;
+            }
+
+            /*Time for some hover effects*/
+            /*We will apply the hover effect the the lineage of the element also*/
+            .tree li a:hover,
+            .tree li a:hover+ul li a {
+                background: #c8e4f8;
+                color: #000;
+                border: 1px solid #94a0b4;
+            }
+
+            /*Connector styles on hover*/
+            .tree li a:hover+ul li::after,
+            .tree li a:hover+ul li::before,
+            .tree li a:hover+ul::before,
+            .tree li a:hover+ul ul::before {
+                border-color: #94a0b4;
+            }
+
+
+            .button {
+                font-size: 10px;
+                border: 1px solid #ccc;
+                border-radius: 7px;
+                width: 25%;
+                height: 24px;
+            }
+
+            .inbtn {
+                display: inline-block;
+                width: 274px;
+                margin-top: 40px;
+            }
+
+            /*Thats all. I hope you enjoyed it.
+Thanks :)*/
+        </style>
+
+
+        <div ng-app="myApp" ng-controller="myCtrl">
+
+            <div class="tree">
+
+                <div dynamic="newHtml"></div>
+            </div>
+            <!-- <div>
+                <form>
+                    <input type="text" ng-model="testVal">
+                </form>
+
+            </div> -->
+            <div>
+                <!-- <li ng-repeat="o in obj">
+                    {{o.type}}
+                </li> -->
+                <!-- <ul>
+                    <li ng-repeat="(key,val) in obj">{{key}}: {{val}}</li>
+                </ul> -->
+
+                <!-- <select ng-model="selectedName.x" ng-options="x for x in names">
+                </select> -->
+
+                <!-- <div ng-repeat="val in obj1"><span ng-click="add2(val.myId, $index)"
+                        ng-style="val.type == 'SMS' && {'background-color':'green'} || {'background-color': 'blue'}"
+                        style="width: 100px; border: 1px solid black;">{{val}}</span>
+                    <span>^</span></div> -->
+
+
+
+            </div>
+        </div>
+
+        <script>
+
+            var app = angular.module('myApp', []);
+
+
+            app.controller('myCtrl', function ($scope, $compile) {
+
+                $scope.names = ["SMS", "CONDITION", "EMAIL", "DELAY"];
+                $scope.obj1 = [{ type: "parent1", parent: 0, myId: 0, myData: {} }];
+                $scope.newHtml = '<ul><li id="' + $scope.obj1[0].parent + '"><a ng-click="add2(' + $scope.obj1[0].myId + ', 0)">' + $scope.obj1[0].type + '</a></li></ul>';
+
+                $scope.selectedName = {};
+
+                function test(i) {
+                    //  let [someResult, anotherResult] = await Promise.all([someCall(), anotherCall()]);
+                    // console.log(someResult, anotherResult, '===================')
+                    let k = 0
+                    document.getElementById('0').innerHTML = ''
+                    $scope.obj1.forEach(element => {
+                        element.ind = k++;
+                        if (element.myId != 0) {
+                            if (element.type == 'No') {
+                                var el = document.getElementById(element.parent);
+
+                                $scope.ele = element;
+                                let ah = {
+                                    myId: element.myId,
+                                    ind: element.ind
+                                }
+                                let a = "<li id='" + element.myId + "'><a >" + element.type + "<span class='inbtn'><button ng-click='add2(" + element.myId + ", " + element.ind + ", x)' ng-repeat='x in names'>{{x}}</button></span></a> </li>";
+                                // $("#" + element.parent).children('ul').append($compile(a)($scope))
+
+                                $(el).children('ul').append($compile(a)($scope))
+                            }
+                            else {
+                                var el = document.getElementById(element.parent);
+                                let ah = {
+                                    myId: element.myId,
+                                    ind: element.ind
+                                }
+                                $scope.ele = element;
+                                var html = "<ul><li id='" + element.myId + "'><a >" + element.type + "<span class='inbtn'><button class='button' ng-click='add2(" + element.myId + ", " + element.ind + ", x)' ng-repeat='x in names'>{{x}}</button></span></a></li></ul>";
+
+                                angular.element(el).append($compile(html)($scope))
+
+
+                                // let a = "<ul><li id='" + element.myId + "'><a ng-click='add3(" + i + ")'>" + element.type + "</a></li></ul>";
+                                // $("#" + element.parent).append(a);
+                            }
+                        }
+                    });
+                }
+                // $('ul li').click(function () {
+                //     console.log($(this), '======')
+                // });
+                $scope.add3 = function (val) {
+                    console.log(val, '========123==1=')
+                    let abc = new Date().getTime() + Math.ceil(Math.random() * 1000);
+                    if ($scope.selectedName.x == 'CONDITION') {
+                        $scope.obj1.splice(val.ind + 1, 0, { type: "yes", parent: val.myId, myId: abc, myData: $scope.testVal })
+                        $scope.obj1.splice(val.ind + 2, 0, { type: "No", parent: val.myId, myId: abc + 1, myData: $scope.testVal })
+                    }
+                    else {
+                        $scope.obj1.splice(val.ind + 1, 0, { type: $scope.selectedName.x, parent: val.myId, myId: abc, myData: $scope.testVal })
+                    }
+                    $scope.obj1.forEach(element => {
+                        if (element.parent == val.myId && element.myId != val.myId && element.myId != abc && element.myId != abc + 1) {
+                            element.parent = abc;
+                        }
+                    });
+                    test(val.ind)
+                }
+
+                $scope.add2 = function (i, index, buttonVal) {
+                    console.log(i, index, '========123===')
+                    let abc = new Date().getTime() + Math.ceil(Math.random() * 1000);
+                    if (buttonVal == 'CONDITION') {
+                        $scope.obj1.splice(index + 1, 0, { type: "yes", parent: i, myId: abc, myData: $scope.testVal })
+                        $scope.obj1.splice(index + 2, 0, { type: "No", parent: i, myId: abc + 1, myData: $scope.testVal })
+                    }
+                    else {
+                        $scope.obj1.splice(index + 1, 0, { type: buttonVal, parent: i, myId: abc, myData: $scope.testVal })
+                    }
+                    $scope.obj1.forEach(element => {
+                        if (element.parent == i && element.myId != i && element.myId != abc && element.myId != abc + 1) {
+                            element.parent = abc;
+                        }
+                    });
+                    test(index)
+                }
+            });
+            app.directive('dynamic', function ($compile) {
+                return {
+                    restrict: 'A',
+                    replace: true,
+                    link: function (scope, ele, attrs) {
+                        scope.$watch(attrs.dynamic, function (html) {
+                            ele.html(html);
+                            $compile(ele.contents())(scope);
+                        });
+                    }
+                };
+            });
+        </script>
+
+</body>
+
+</html>
